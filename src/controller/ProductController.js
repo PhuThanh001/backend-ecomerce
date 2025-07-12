@@ -26,14 +26,15 @@ const update_product = async (req , res) => {
         try{    
              const productid = req.params.id
              const data = req.body
+             console.log('data' ,data)
              if(!productid){
                     return res.status(404).json({
                         status :'ERR',
                         message :'the product is not exist'
                     })
              }
-             console.log('userId',userId)
-             const response = await UserService.update_user(userId , data)   
+             console.log('ProductId',productid)
+             const response = await ProductService.update_product(productid , data)   
              return res.status(200).json(response)
         }catch(e) {
             return res.status(404).json({
@@ -43,16 +44,16 @@ const update_product = async (req , res) => {
 }
 const delete_product = async (req , res) => {
         try{    
-             const userId = req.params.id
+             const productid = req.params.id
              const token = req.headers
-             if(!userId){
+             if(!productid){
                     return res.status(200).json({
                         status :'ERR',
-                        message :'the password is equal confirmPassword'
+                        message :'the product not exist'
                     })
              }
-             console.log('userId',userId)
-             const response = await UserService.delete_user(userId )   
+             console.log('Productid',productid)
+             const response = await ProductService.delete_product(productid )   
              return res.status(200).json(response)
         }catch(e) {
             return res.status(404).json({
@@ -60,8 +61,44 @@ const delete_product = async (req , res) => {
             })
         }
 }
+const getDetailsProduct = async (req , res) => {
+    try{
+        const productid = req.params.id
+        if(!productid){
+            return res.status(200).json({
+                        status :'ERR',
+                        message :'the password is equal confirmPassword'
+                    }) 
+        }
+        console.log('productid' , productid)
+        const response = await ProductService.getDetailsProduct(productid)
+        return res.status(200).json(response)
+    }catch(e){
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
+const getAll = async (req, res) => {
+    try {
+        const response = await ProductService.getAllProduct();
+        console.log(response);
+        return res.status(200).json({
+            status: 'OK',
+            data: response
+        });
+    } catch (e) {
+        console.error(e); // log lỗi cho backend theo dõi
+        return res.status(500).json({
+            status: 'ERROR',
+            message: e.message || 'Internal server error'
+        });
+    }
+};
 module.exports = {
     create_product,
     update_product,
-    delete_product
+    delete_product,
+    getDetailsProduct,
+    getAll
 }
