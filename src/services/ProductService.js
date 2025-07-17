@@ -2,6 +2,8 @@ const { rejects } = require("assert")
 const Product = require("../models/ProductModel")
 const { promises } = require("dns")
 const { resolve } = require("path")
+const { console } = require("inspector")
+const { all } = require("../routes/UserRouter")
 
 
 const createProduct = (NewProduct) => {
@@ -105,16 +107,50 @@ const getDetailsProduct = (id) => {
     }
     )
 }
-const getAllProduct = () => {
+const getAllProduct = (limit ,page, sort , filter) => {
     return new Promise(async (resolve , rejects)=> {
         try {
-            const allProduct = await Product.find()
+            const totalProduct = await Product.countDocuments()
+            console.log('sort', sort)
+            if(filter){
+                const lable =  filter[0];
+                console.log('lable', lable)
+                const allObjectFilter = await Product.find({ lable : {'$regex' : filter[1] } }).limit(limit).skip(page * limit)
+                resolve({
+                status : 'OK' ,
+                message : 'SUCCESS',
+                data : allObjectFilter,
+                total: totalProduct,
+                pagecurrent: Number(page + 1),
+                totalPage: Math.ceil(totalProduct / limit)
+            })
+            }
+            if(sort){
+                const objectSort = {}
+                objectSort[sort[1] = sort[0]]
+                const allProductSort = await Product.find().limit(limit).skip(page * limit).sort(objectSort) 
+                resolve({
+                status : 'OK' ,
+                message : 'SUCCESS',
+                data : allProductSort,
+                total: totalProduct,
+                pagecurrent: page + 1,
+                totalPage: Math.ceil(totalProduct / limit)
+            })
+            }
+            const allProduct = await Product.find().limit(limit).skip(page * limit).sort({
+                name: sort
+            })
             resolve({
                 status : 'OK' ,
                 message : 'SUCCESS',
-                data : allProduct
+                data : allProduct,
+                total: totalProduct,
+                pagecurrent: page + 1,
+                totalPage: Math.ceil(totalProduct / limit)
             })
-        }catch(e){
+        }
+        catch(e){
             rejects(e)
         }
     }
