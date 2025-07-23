@@ -82,7 +82,7 @@ const getDetailsProduct = async (req , res) => {
 const getAll = async (req, res) => {
     try {
         const { limit , page ,sort , filter } = req.query; // Lấy limit và page từ query string
-        const response = await ProductService.getAllProduct(Number(limit) || 8, Number(page) || 0 , sort , filter);
+        const response = await ProductService.getAllProduct(Number(limit) || 8, Number(page) || 0 , filter);
         return res.status(200).json({
             status: 'OK',
             data: response
