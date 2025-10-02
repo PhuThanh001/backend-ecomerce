@@ -253,7 +253,7 @@ router.get('/vnpay_return', (req, res) => {
     const code = vnp_Params.vnp_ResponseCode;
     console.log("Signature valid, responseCode:", code);
     if (code === '00') {
-      return res.redirect(`https://nest-shop-b2adgskiq-phumbs-projects.vercel.app//OrderPageSuccess?status=success&orderId=${encodeURIComponent(vnp_Params.vnp_TxnRef)}`);
+      return res.redirect(`https://nest-shop-b2adgskiq-phumbs-projects.vercel.app/OrderPageSuccess?status=success&orderId=${encodeURIComponent(vnp_Params.vnp_TxnRef)}`);
     } else {
       return res.redirect(`https://nest-shop-b2adgskiq-phumbs-projects.vercel.app/?status=fail&orderId=${encodeURIComponent(vnp_Params.vnp_TxnRef)}`);
     }
