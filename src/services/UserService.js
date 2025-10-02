@@ -47,14 +47,7 @@ const loginUser = (userLogin) => {
                     message : 'the user is not define'
                 })
             }
-            // const comparePassword = bcrypt.compareSync(password ,checkUser.password)
-            // console.log('comparePassword' , comparePassword)
-            // if(!comparePassword ){
-            //     return resolve({
-            //         status :'OK',
-            //         message : 'the password or user is incorrect'
-            //     })
-            // }
+
             const access_token = await genneralAccessToken({
                 id : checkUser.id,
                 isAdmin : checkUser.isAdmin
@@ -63,7 +56,6 @@ const loginUser = (userLogin) => {
                 id : checkUser.id,
                 isAdmin : checkUser.isAdmin
             })
-            console.log('access_token', access_token)
                 return resolve({
                     status: 'success', // đồng bộ với frontend
                     message: 'SUCCESS', // key viết thường
@@ -82,7 +74,6 @@ const update_user = (id , data) => {
                 const checkUser = await User.findOne({
                     _id: id
                 })
-                console.log('checkUser' ,checkUser)
                 if (checkUser === null){
                     resolve({
                         status : 'OK',
@@ -90,7 +81,6 @@ const update_user = (id , data) => {
                     })
                 }
             const updateUser = await User.findByIdAndUpdate(id ,data)
-            console.log('updateUser' ,updateUser)
                 resolve({
                     status : 'OK',
                     Message : 'SUCCESS',

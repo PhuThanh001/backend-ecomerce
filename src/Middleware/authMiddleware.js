@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
-const { resolve } = require('path')
 dotenv.config()
+const { resolve } = require('path')
+
 
 // const authMiddleware = (req , res, next) => {
 //     console.log('req.headers' , req.headers)
@@ -29,19 +30,15 @@ dotenv.config()
 // }
 const authMiddleware = (req, res, next) => {
     try {
-        console.log('req.headers', req.headers)
         const token = req.headers.token?.split(' ')[1]
-        console.log('tokennn' , token)
         if (!token) {
             return res.status(401).json({ message: 'No token provided' })
         }
         const userId = req.params.id
         jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
             if (err) {
-                console.error('JWT VERIFY ERROR:', err)
                 return res.status(403).json({ message: 'Authentication failed', status: 'ERROR' })
             }
-            console.log('user (decoded):', user)
             const { id, isAdmin } = user
             if (isAdmin || id === userId) {
                 next()
@@ -64,16 +61,13 @@ const authUserMiddleWare = (req , res, next ) => {
     }
     const token = authHeader.split(' ')[1]; // tách "Bearer <token>"
     const userId = req.params.id;
-    console.log('useridđ' , userId)
     jwt.verify(token , process.env.ACCESS_TOKEN , function(err, user){
         if(err) {
-            console.log('err' , err)
             return res.status(404).json({
                 message:'the authentication phu',
                 status :'ERROR'
             })
         }
-        console.log('user' , user)
         if ( user?.id === userId ){
             next()
         }else {

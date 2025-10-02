@@ -24,7 +24,6 @@ const createUser = async (req , res) => {
                         message :'the password is equal confirmPassword'
                     })
                 }
-                //console.log('isCheckemail' ,isCheckemail)
                 const response = await UserService.createUser(req.body)
                 return res.status(200).json(response)
         }catch(e) {
@@ -49,7 +48,6 @@ const loginUser = async (req , res) => {
                         message :'the input is email'
                     })
                 }
-                //console.log('isCheckemail' ,isCheckemail)
                 const response = await UserService.loginUser(req.body)
                 const {refresh_token , ...newResponse} = response
                 res.cookie('refresh_token', refresh_token, {
@@ -74,7 +72,6 @@ const update_user = async (req , res) => {
                         message :'the password is equal confirmPassword'
                     })
              }
-             console.log('userId',userId)
              const response = await UserService.update_user(userId , data)   
              return res.status(200).json(response)
         }catch(e) {
@@ -93,7 +90,6 @@ const delete_user = async (req , res) => {
                         message :'the password is equal confirmPassword'
                     })
              }
-             console.log('userId',userId)
              const response = await UserService.delete_user(userId )   
              return res.status(200).json(response)
         }catch(e) {
@@ -147,7 +143,6 @@ const getDetailsUser = async (req , res) => {
     }
 }
 const refreshToken = async (req, res) => {
-    console.log('req.cookies.request.token' , req.cookies.refresh_token)
     try {
         const token =  req.cookies.refresh_token ;
         if(!token) {

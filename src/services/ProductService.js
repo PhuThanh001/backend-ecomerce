@@ -9,7 +9,7 @@ const { all } = require("../routes/UserRouter")
 const createProduct = (NewProduct) => {
     return new Promise(async (resolve, rejects) => {
         try {
-            const { name, image, type, countInStock, price, rating, description } = NewProduct
+            const { name, image, type, countInStock, price, rating, description ,discount } = NewProduct
 
             const checkProduct = await Product.findOne({
                 name: name
@@ -21,7 +21,14 @@ const createProduct = (NewProduct) => {
                 })
             }
             const createProduct = await Product.create({
-                name, image, type, countInStock, price, rating, description
+                name, 
+                image, 
+                type, 
+                countInStock: Number(countInStock), 
+                price, 
+                rating,
+                description ,
+                discount: Number(discount)
             })
             if (createProduct) {
                 resolve({
@@ -125,18 +132,16 @@ const getAllProduct = (limit, page, sort, filterField, filterValue) => {
     return new Promise(async (resolve, reject) => {
         try {
             const totalProduct = await Product.countDocuments();
-            console.log('🟢 sort:', sort);
-            console.log('🟢 filterField:', filterField, 'filterValue:', filterValue);
+
 
             // ✅ FILTER LOGIC
             if (filterField && filterValue) {
                 const query = {
-                    [filterField]: { '$regex': filterValue, $options: 'i' }
+                    [filterField]: new RegExp(`^${filterValue}$`, 'i')  // <== chính xác hơn
                 };
                 const allObjectFilter = await Product.find(query)
                     .limit(limit)
                     .skip(page * limit);
-                console.log('🟢 Filtered Result:', allObjectFilter);
 
                 resolve({
                     status: 'OK',
@@ -170,10 +175,9 @@ const getAllProduct = (limit, page, sort, filterField, filterValue) => {
                 });
                 return;
             }
-
-            // ✅ DEFAULT: get all
-            const allProduct = await Product.find().limit(limit).skip(page * limit);
-            resolve({
+            if(!limit){
+                const allProduct = await Product.find();
+                resolve({
                 status: 'OK',
                 message: 'SUCCESS',
                 data: allProduct,
@@ -181,6 +185,31 @@ const getAllProduct = (limit, page, sort, filterField, filterValue) => {
                 pagecurrent: page + 1,
                 totalPage: Math.ceil(totalProduct / limit)
             });
+            }else {
+                const allProduct = await Product.find().limit(limit).skip(page * limit);
+                resolve({
+                status: 'OK',
+                message: 'SUCCESS',
+                data: allProduct,
+                total: totalProduct,
+                pagecurrent: page + 1,
+                totalPage: Math.ceil(totalProduct / limit)
+            });
+            }
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+const getAllTypes = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+                const allObjectFilter = await Product.distinct('type')
+                resolve({
+                    status: 'OK',
+                    message: 'SUCCESS',
+                    data: allObjectFilter,
+                });
         } catch (e) {
             console.error('❌ Lỗi trong getAllProduct:', e);
             reject(e);
@@ -188,59 +217,6 @@ const getAllProduct = (limit, page, sort, filterField, filterValue) => {
     });
 };
 
-// const getAllProduct = (limit ,page, sort , filter) => {
-//     return new Promise(async (resolve , rejects)=> {
-//         try {
-//             const totalProduct = await Product.countDocuments()
-//             console.log('sort', sort)
-//             console.log('filter' , filter)
-//             if (filter) {
-//                 const lable = filter[0]; // field name
-//                 const value = filter[1]; // filter value
-//                 console.log('lable:', lable, 'value:', value)
-//                 const allObjectFilter = await Product.find({
-//                     [lable]: { '$regex': value, $options: 'i' }  // <-- FIXED HERE
-//                 }).limit(limit).skip(page * limit)
-//                 console.log('danh sach' , allObjectFilter )
-//                 resolve({
-//                     status: 'OK',
-//                     message: 'SUCCESS',
-//                     data: allObjectFilter,
-//                     total: totalProduct,
-//                     pagecurrent: Number(page + 1),
-//                     totalPage: Math.ceil(totalProduct / limit)
-//                 });
-//                 return; // <-- prevent continuing to next queries
-//             }
-//             if(sort){
-//                 const objectSort = {}
-//                 objectSort[sort[1] = sort[0]]
-//                 const allProductSort = await Product.find().limit(limit).skip(page * limit).sort(objectSort) 
-//                 resolve({
-//                     status : 'OK' ,
-//                     message : 'SUCCESS',
-//                     data : allProductSort,
-//                     total: totalProduct,
-//                     pagecurrent: page + 1,
-//                     totalPage: Math.ceil(totalProduct / limit)
-//             })
-//             }
-//             const allProduct = await Product.find().limit(limit).skip(page * limit)
-//             resolve({
-//                 status : 'OK' ,
-//                 message : 'SUCCESS',
-//                 data : allProduct,
-//                 total: totalProduct,
-//                 pagecurrent: page + 1,
-//                 totalPage: Math.ceil(totalProduct / limit)
-//             })
-//         }
-//         catch(e){
-//             rejects(e)
-//         }
-//     }
-//     )
-// }
 
 module.exports = {
     createProduct,
@@ -248,6 +224,7 @@ module.exports = {
     delete_product,
     delete_many,
     getAllProduct,
-    getDetailsProduct
+    getDetailsProduct,
+    getAllTypes
 }
 
