@@ -32,7 +32,7 @@ mongoose.connect(`${process.env.MONGO_DB}`)
 // app.listen(port ,() => {
 //         console.log('Server is running in port:', + port)
 // })
-const PORT = 3001;
+const PORT =process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`✅ Server is running in port: ${PORT}`);
 });
