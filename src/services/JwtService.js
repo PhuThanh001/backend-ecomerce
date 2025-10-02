@@ -4,16 +4,16 @@ const { resolve } = require('path')
 const { rejects } = require('assert')
 dotenv.config()
 const genneralAccessToken = async (payload) => {
-    //console.log('payload' , payload)
+    //console.log('pccccccccccccccccccccccccccccccxzzzzzzzzzzzzzzzzzzzz`ayload' , payload)
     const access_token = jwt.sign({
-       payload 
+       ...payload 
     }, process.env.ACCESS_TOKEN, { expiresIn :'1h'})
     
     return access_token
 }  
 const genneralRefreshToken = async (payload) => {
     const refresh_token = jwt.sign({
-        payload 
+        ...payload 
     },process.env.REFRESH_TOKEN , { expiresIn :'365d'})
     
     return refresh_token
@@ -58,20 +58,17 @@ const genneralRefreshToken = async (payload) => {
 const refreshTokenJwtService = async (token) => {
     return new Promise( async (resolve , rejects) => {
         try{
-            console.log('token', token);
             jwt.verify(token, process.env.REFRESH_TOKEN, async (err, user) => {
                 if (err) {
-                    console.log('err', err);
                     return resolve({
                         status: 'ERROR',
                         message: 'The authentication failed',
                     });
-                }const {payload} = user
+                }
                 const access_token =  await genneralAccessToken({
-                    id : payload?.id,
-                    isAdmin: payload?.isAdmin
+                    id : user?.id,
+                    isAdmin: user?.isAdmin
                 })
-                console.log('user' , user)
                 resolve({
                     status: 'OK', 
                     message: 'SUCCESS',

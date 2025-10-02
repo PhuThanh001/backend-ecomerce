@@ -14,16 +14,13 @@ const createUser = (newUser) => {
             if(checkUser !== null) {
                 resolve({
                     status :'OK',
-                    message : 'the email is already'
+                    message : 'the email is already exist'
                 })
             }
-            const hash = bcrypt.hashSync(password, 10)
+            //const hash = bcrypt.hashSync(password, 10)
             const createUser = await User.create({
-                    name,
                     email,
-                    password : hash,
-                    confirmPassword : hash,
-                    phone
+                    password : password,
             })
             if (createUser ){
                 resolve({
@@ -39,25 +36,18 @@ const createUser = (newUser) => {
 }
 const loginUser = (userLogin) => {
     return new Promise(async (resolve , reject) =>{
-            const {name , email , password , confirmPassword , phone} = userLogin    
+            const { email , password } = userLogin    
             try{
                 const checkUser = await User.findOne({
                     email : email
             })
             if(checkUser === null) {
                 return resolve({
-                    status :'OK',
+                    status :'ERR',
                     message : 'the user is not define'
                 })
             }
-            // const comparePassword = bcrypt.compareSync(password ,checkUser.password)
-            // console.log('comparePassword' , comparePassword)
-            // if(!comparePassword ){
-            //     return resolve({
-            //         status :'OK',
-            //         message : 'the password or user is incorrect'
-            //     })
-            // }
+
             const access_token = await genneralAccessToken({
                 id : checkUser.id,
                 isAdmin : checkUser.isAdmin
@@ -66,19 +56,16 @@ const loginUser = (userLogin) => {
                 id : checkUser.id,
                 isAdmin : checkUser.isAdmin
             })
-            console.log('access_token', access_token)
-            return  resolve({
-                    status : 'OK',
-                    Message : 'SUCCESS',
-                    access_token : access_token,
-                    refresh_token : refresh_token,
-                    data : checkUser
-                })
+                return resolve({
+                    status: 'success', // đồng bộ với frontend
+                    message: 'SUCCESS', // key viết thường
+                    access_token,
+                    refresh_token,
+                    data: checkUser
+                });
             }catch(e) {
                 reject(e)
-            }
-
-        
+            }  
     })
 }
 const update_user = (id , data) => {
@@ -87,7 +74,6 @@ const update_user = (id , data) => {
                 const checkUser = await User.findOne({
                     _id: id
                 })
-                console.log('checkUser' ,checkUser)
                 if (checkUser === null){
                     resolve({
                         status : 'OK',
@@ -95,7 +81,6 @@ const update_user = (id , data) => {
                     })
                 }
             const updateUser = await User.findByIdAndUpdate(id ,data)
-            console.log('updateUser' ,updateUser)
                 resolve({
                     status : 'OK',
                     Message : 'SUCCESS',
@@ -119,6 +104,19 @@ const delete_user = (id ) => {
                     })
                 }
             await User.findByIdAndDelete(id)
+                resolve({
+                    status : 'OK',
+                    Message : 'Delete User success',
+                })            
+            }catch(e) {
+                reject(e)
+            }
+    })
+}
+const delete_many = (ids ) => {
+    return new Promise(async (resolve , reject) => {
+            try{
+            await User.deleteMany({ _id : ids})
                 resolve({
                     status : 'OK',
                     Message : 'Delete User success',
@@ -169,6 +167,7 @@ module.exports = {
     loginUser,
     update_user,
     delete_user,
+    delete_many,
     getAllUser,
     getDetailsUser
 }
