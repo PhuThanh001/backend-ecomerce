@@ -253,13 +253,13 @@ router.get('/vnpay_return', (req, res) => {
     const code = vnp_Params.vnp_ResponseCode;
     console.log("Signature valid, responseCode:", code);
     if (code === '00') {
-      return res.redirect(`http://localhost:5173/OrderPageSuccess?status=success&orderId=${encodeURIComponent(vnp_Params.vnp_TxnRef)}`);
+      return res.redirect(`https://backend-ecomerce-0c91.onrender.com/OrderPageSuccess?status=success&orderId=${encodeURIComponent(vnp_Params.vnp_TxnRef)}`);
     } else {
-      return res.redirect(`http://localhost:5173/OrderPageSuccess?status=fail&orderId=${encodeURIComponent(vnp_Params.vnp_TxnRef)}`);
+      return res.redirect(`https://backend-ecomerce-0c91.onrender.com?status=fail&orderId=${encodeURIComponent(vnp_Params.vnp_TxnRef)}`);
     }
   } else {
     console.log("Signature mismatch");
-    return res.redirect(`http://localhost:5173/OrderPageSuccess?status=invalid-signature`);
+    return res.redirect(`https://backend-ecomerce-0c91.onrender.com?status=invalid-signature`);
   }
 });
 
