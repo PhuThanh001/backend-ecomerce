@@ -8,7 +8,7 @@ const { genneralAccessToken , genneralRefreshToken } = require('./JwtService')
  const createOrder = (newOrder) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { orderItems, paymentMethod, itemsPrice, shippingPrice, totalPrice, fullname, address, city, phone, user } = newOrder;
+      const { orderItems, paymentMethod, itemsPrice, shippingPrice, totalPrice, fullname, address, city, phone, user ,isPaid } = newOrder;
       const promises = orderItems.map(async (order) => {
         const checkOrder = await Product.findOneAndUpdate(
           { _id: order.product, countInStock: { $gte: order.amount } },
@@ -36,7 +36,8 @@ const { genneralAccessToken , genneralRefreshToken } = require('./JwtService')
         itemsPrice,
         shippingPrice,  
         totalPrice,
-        user
+        user,
+        isPaid
       });
       if (!createdOrder) {
         return resolve({
